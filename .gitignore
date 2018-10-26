@@ -1,0 +1,7 @@
+node_modules
+
+public/bundle.js
+public/index.html
+
+config.json
+yarn-error.log
