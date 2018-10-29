@@ -10,6 +10,7 @@ import {
   faList,
   faBroadcastTower,
   faSignOutAlt,
+  faSync,
 } from '@fortawesome/free-solid-svg-icons';
 import App from './components/App';
 
@@ -20,6 +21,7 @@ library.add(
   faList,
   faBroadcastTower,
   faSignOutAlt,
+  faSync,
 );
 injectGlobal`
   * {

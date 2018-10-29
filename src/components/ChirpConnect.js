@@ -7,7 +7,7 @@ export default class ChirpConnect extends Component {
   constructor(props) {
     super(props);
 
-    const { onData } = props;
+    const { onReceived, onSending, onReceiving, onSent } = props;
 
     this.sdk = null;
     this.state = {
@@ -27,12 +27,25 @@ export default class ChirpConnect extends Component {
           previous,
         });
       },
+      onSending: (data) => {
+        console.log('sending');
+        onSending && onSending(data);
+      },
+      onSent: (data) => {
+        console.log('sent');
+        onSent && onSent(data);
+      },
+      onReceiving: () => {
+        console.log('receiving');
+        onReceiving && onReceiving();
+      },
       onReceived: (data) => {
         this.setState({
           error: data.length === 0,
           data,
         });
-        onData && onData(data);
+        console.log('received');
+        onReceived && onReceived(data);
       },
     })
       .then((sdk) => {

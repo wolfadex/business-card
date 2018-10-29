@@ -5,7 +5,7 @@ const Header = styled('div')`
   background-color: ${({ theme: { green } }) => green};
   display: grid;
   font-size: 1.9rem;
-  grid-template-columns: 1rem auto;
+  grid-template-columns: 2rem auto;
   height: 4rem;
   overflow: hidden;
   text-align: center;

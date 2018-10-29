@@ -1,10 +1,12 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect, createContext } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/firestore';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { Router, navigate } from '@reach/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import styled, { css } from 'react-emotion';
 import config from '../../config.json';
 import ChirpConnect from './ChirpConnect';
 import BusinessCards from './BusinessCards';
@@ -26,6 +28,19 @@ const firebaseUiConfig = {
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
 };
 
+const DataState = styled('div')`
+  bottom: 2rem;
+  font-size: 2rem;
+  left: 2rem;
+  pointer-events: none;
+  position: absolute;
+`;
+const styledSVGIcon = css`
+  path {
+    color: #f98948;
+  }
+`;
+
 export default memo(() => {
   // Authentication
   const [userData, setUserData] = useState(null);
@@ -45,7 +60,7 @@ export default memo(() => {
   const [newCardId, setNewCardId] = useState(null);
   useEffect(
     () => {
-      if (newCardId != null) {
+      if (newCardId != null && newCardId !== '' && newCardId !== userData.uid) {
         const ref = firestore.collection('users').doc(userData.uid);
 
         ref
@@ -71,6 +86,10 @@ export default memo(() => {
     },
     [newCardId],
   );
+  const [sending, setSending] = useState(false);
+  const [receiving, setReceiving] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [received, setReceived] = useState(false);
 
   return (
     <div>
@@ -84,12 +103,26 @@ export default memo(() => {
       {userData && (
         <>
           <ChirpConnect
-            onData={(data) => {
+            onReceived={(data) => {
               const string = new TextDecoder('utf-8').decode(data);
               setNewCardId(string);
+              setReceiving(false);
+              setReceived(true);
+            }}
+            onSending={() => {
+              setSending(true);
+              setSent(false);
+            }}
+            onReceiving={() => {
+              setReceiving(true);
+              setReceived(false);
+            }}
+            onSent={() => {
+              setSending(false);
+              setSent(true);
             }}
           >
-            {({ initError, ready, current, previous, error, data, send }) => (
+            {({ initError, ready, send }) => (
               <>
                 {initError && (
                   <span>
@@ -151,6 +184,19 @@ export default memo(() => {
           </Router>
         </>
       )}
+      <DataState>
+        {sending && (
+          <FontAwesomeIcon icon="sync" spin className={styledSVGIcon} />
+        )}
+        {receiving && (
+          <FontAwesomeIcon
+            icon="sync"
+            spin
+            className={styledSVGIcon}
+            flip="horizontal"
+          />
+        )}
+      </DataState>
     </div>
   );
 });
