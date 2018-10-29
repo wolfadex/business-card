@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import BusinessCard from './BusinessCard';
 
-export default ({ firestore, userId }) => {
+export default memo(({ firestore, userId }) => {
   const [cardIds, setCardIds] = useState([]);
   useEffect(
     () => {
@@ -31,4 +31,4 @@ export default ({ firestore, userId }) => {
       ))}
     </ul>
   );
-};
+});

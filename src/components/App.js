@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
@@ -24,17 +24,55 @@ const firebaseUiConfig = {
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
 };
 
-export default () => {
-  const [userData, setUserData] = useState(null);
-  useEffect(() => {
-    const unregisterAuthObserver = firebase
-      .auth()
-      .onAuthStateChanged(setUserData);
+console.log('carl');
 
-    return () => {
-      unregisterAuthObserver();
-    };
-  });
+export default memo(() => {
+  // Authentication
+  const [userData, setUserData] = useState(null);
+  useEffect(
+    () => {
+      console.log('App user auth effect running');
+      const unregisterAuthObserver = firebase
+        .auth()
+        .onAuthStateChanged(setUserData);
+
+      return () => {
+        unregisterAuthObserver();
+      };
+    },
+    [false],
+  );
+  // Receiving a card from another user
+  const [newCardId, setNewCardId] = useState(null);
+  useEffect(
+    () => {
+      console.log('App card listening effect running');
+      if (newCardId != null) {
+        const ref = firestore.collection('users').doc(userData.uid);
+
+        ref
+          .get()
+          .then((doc) => {
+            const { cards = [] } = doc.data();
+
+            ref
+              .set(
+                { cards: Array.from(new Set([...cards, newCardId])) },
+                { merge: true },
+              )
+              .catch((error) => {
+                // TODO
+                console.log('Error: Attempted to add card but failed:', error);
+              });
+          })
+          .catch((error) => {
+            // TODO;
+            console.log('Error: Attempted to get cards but failed:', error);
+          });
+      }
+    },
+    [newCardId],
+  );
 
   return (
     <div>
@@ -46,7 +84,12 @@ export default () => {
       )}
       {userData && (
         <>
-          <ChirpConnect>
+          <ChirpConnect
+            onData={(data) => {
+              const string = new TextDecoder('utf-8').decode(data);
+              setNewCardId(string);
+            }}
+          >
             {({ initError, ready, current, previous, error, data, send }) => (
               <>
                 {initError && (
@@ -104,4 +147,4 @@ export default () => {
       )}
     </div>
   );
-};
+});

@@ -7,6 +7,8 @@ export default class ChirpConnect extends Component {
   constructor(props) {
     super(props);
 
+    const { onData } = props;
+
     this.sdk = null;
     this.state = {
       ready: false,
@@ -30,6 +32,7 @@ export default class ChirpConnect extends Component {
           error: data.length === 0,
           data,
         });
+        onData && onData(data);
       },
     })
       .then((sdk) => {

@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import styled from 'react-emotion';
 
 const Card = styled('li')``;
 
-export default ({ firestore, cardId, userId }) => {
+export default memo(({ firestore, cardId, userId }) => {
   // Card data from the other user
-  const [cardData, setCardData] = useState(null);
+  const [cardData, setCardData] = useState({});
   useEffect(() => {
     const unsubscribe = firestore
       .collection('users')
       .doc(cardId)
       .onSnapshot((doc) => {
-        setCardData(doc.data());
+        setCardData(doc.data() || {});
       });
     return () => {
       unsubscribe();
@@ -33,15 +33,14 @@ export default ({ firestore, cardId, userId }) => {
     };
   });
 
+  const { name } = cardData;
+
   return (
     <Card>
-      <b>Contact Info:</b>
-      <b />
-      <span>Card Data Here</span>
-      <b />
-      <b>Notes:</b>
-      <b />
-      <p>{cardNotes}</p>
+      <span>
+        <b>Name: </b>
+        {name}
+      </span>
     </Card>
   );
-};
+});

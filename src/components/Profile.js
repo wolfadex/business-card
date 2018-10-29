@@ -1,18 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
-function changeValues(firestore, userId) {
-  return function(values) {
-    firestore
-      .collection('users')
-      .doc(userId)
-      .set(values, { merge: true })
-      .catch((error) => {
-        // TODO
-      });
-  };
-}
-
-export default ({ userId, firestore }) => {
+export default memo(({ userId, firestore }) => {
   const firebaseUpdate = changeValues(firestore, userId);
   const [name, setName] = useState('');
   const [details, setDetails] = useState([]);
@@ -91,7 +79,19 @@ export default ({ userId, firestore }) => {
       ))} */}
     </div>
   );
-};
+});
+
+function changeValues(firestore, userId) {
+  return function(values) {
+    firestore
+      .collection('users')
+      .doc(userId)
+      .set(values, { merge: true })
+      .catch((error) => {
+        // TODO
+      });
+  };
+}
 
 function updateDetail(details, index, update) {
   return [
