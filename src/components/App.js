@@ -10,6 +10,8 @@ import ChirpConnect from './ChirpConnect';
 import BusinessCards from './BusinessCards';
 import Menu from './Menu';
 import Profile from './Profile';
+import BusinessCard from './BusinessCard';
+import Header from './Header';
 
 firebase.initializeApp(config.FIREBASE);
 
@@ -24,14 +26,11 @@ const firebaseUiConfig = {
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
 };
 
-console.log('carl');
-
 export default memo(() => {
   // Authentication
   const [userData, setUserData] = useState(null);
   useEffect(
     () => {
-      console.log('App user auth effect running');
       const unregisterAuthObserver = firebase
         .auth()
         .onAuthStateChanged(setUserData);
@@ -46,7 +45,6 @@ export default memo(() => {
   const [newCardId, setNewCardId] = useState(null);
   useEffect(
     () => {
-      console.log('App card listening effect running');
       if (newCardId != null) {
         const ref = firestore.collection('users').doc(userData.uid);
 
@@ -76,6 +74,7 @@ export default memo(() => {
 
   return (
     <div>
+      {!userData && <Header>Business Card Manager</Header>}
       {!userData && (
         <StyledFirebaseAuth
           uiConfig={firebaseUiConfig}
@@ -124,6 +123,9 @@ export default memo(() => {
                           icon: 'broadcast-tower',
                         },
                       ]}
+                      signOut={() => {
+                        firebase.auth().signOut();
+                      }}
                     />
                   </>
                 )}
@@ -141,7 +143,11 @@ export default memo(() => {
               userId={userData.uid}
               firestore={firestore}
             />
-            <div path=":cardId">Specific card data</div>
+            <BusinessCard
+              path=":cardId"
+              firestore={firestore}
+              userId={userData.uid}
+            />
           </Router>
         </>
       )}

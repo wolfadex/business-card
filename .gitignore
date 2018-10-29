@@ -6,6 +6,7 @@ public/*.chunk.js
 
 config.json
 yarn-error.log
+firebase-debug.log
 
 # ignore all . files and . folders
 .*

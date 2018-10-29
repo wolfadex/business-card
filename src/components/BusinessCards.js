@@ -1,5 +1,16 @@
 import React, { memo, useState, useEffect } from 'react';
-import BusinessCard from './BusinessCard';
+import styled from 'react-emotion';
+import ListCard from './ListCard';
+import Header from './Header';
+
+const List = styled('ul')`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 export default memo(({ firestore, userId }) => {
   const [cardIds, setCardIds] = useState([]);
@@ -19,16 +30,19 @@ export default memo(({ firestore, userId }) => {
   );
 
   return (
-    <ul>
-      <li>Cards go here</li>
-      {cardIds.map((cardId) => (
-        <BusinessCard
-          key={cardId}
-          cardId={cardId}
-          userId={userId}
-          firestore={firestore}
-        />
-      ))}
-    </ul>
+    <>
+      <Header>Business Cards</Header>
+      <List>
+        {cardIds.length === 0 && <li>Time to collect some business cards!</li>}
+        {cardIds.map((cardId) => (
+          <ListCard
+            key={cardId}
+            cardId={cardId}
+            userId={userId}
+            firestore={firestore}
+          />
+        ))}
+      </List>
+    </>
   );
 });

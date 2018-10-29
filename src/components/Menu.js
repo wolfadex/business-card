@@ -1,21 +1,37 @@
 import React, { useState } from 'react';
 import styled, { css } from 'react-emotion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Motion, spring } from 'react-motion';
 
 const Button = styled('button')`
   border-radius: 10rem;
-  bottom: 3rem;
+  bottom: 2rem;
   position: absolute;
-  right: 3rem;
-  transition: bottom 0.25s;
+  right: 2rem;
   width: 4rem;
   height: 4rem;
-  cursor: pointer;
   padding: 0;
   font-size: 2rem;
+  border: none;
+  border: 0.2rem solid ${({ theme: { primary } }) => primary};
+  background-color: ${({ theme: { primary } }) => primary};
 `;
 
-export default ({ actions = [] }) => {
+const AnimatedButton = styled('button')`
+  border-radius: 10rem;
+  bottom: 2rem;
+  position: absolute;
+  right: 2rem;
+  width: 4rem;
+  height: 4rem;
+  padding: 0;
+  font-size: 2rem;
+  border: 0.2rem solid ${({ theme: { primary } }) => primary};
+  background-color: ${({ theme: { secondary } }) => secondary};
+  color: ${({ theme: { primary } }) => primary};
+`;
+
+export default ({ actions = [], signOut }) => {
   const [isOpen, setOpen] = useState(false);
   const actionCount = actions.length;
 
@@ -33,20 +49,46 @@ export default ({ actions = [] }) => {
       </Button>
       <>
         {actions.map(({ id, onClick, icon }, index) => (
-          <Button
+          <Motion
             key={id}
-            className={css`
-              bottom: ${isOpen ? (index + 2) * 5 : 3}rem;
-              z-index: ${actionCount - index};
-            `}
-            onClick={() => {
-              setOpen(false);
-              onClick && onClick();
-            }}
+            style={{ bottom: spring(isOpen ? (index + 2) * 5 - 3 : 2) }}
           >
-            <FontAwesomeIcon icon={icon} />
-          </Button>
+            {({ bottom }) =>
+              bottom > 2 && (
+                <AnimatedButton
+                  className={css`
+                    bottom: ${bottom}rem;
+                    z-index: ${actionCount - index};
+                  `}
+                  onClick={() => {
+                    setOpen(false);
+                    onClick && onClick();
+                  }}
+                >
+                  <FontAwesomeIcon icon={icon} />
+                </AnimatedButton>
+              )
+            }
+          </Motion>
         ))}
+        <Motion style={{ right: spring(isOpen ? 2 * 5 - 3 : 2) }}>
+          {({ right }) =>
+            right > 2 && (
+              <AnimatedButton
+                className={css`
+                  right: ${right}rem;
+                  z-index: ${actionCount};
+                `}
+                onClick={() => {
+                  setOpen(false);
+                  signOut && signOut();
+                }}
+              >
+                <FontAwesomeIcon icon="sign-out-alt" />
+              </AnimatedButton>
+            )
+          }
+        </Motion>
       </>
     </>
   );

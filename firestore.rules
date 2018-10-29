@@ -5,6 +5,16 @@ service cloud.firestore {
       allow create: if request.auth.uid != null;
       allow update: if request.auth.uid == userId;
       allow delete: if request.auth.uid == userId;
+
+      match /notes/{noteId} {
+        allow get: if request.auth.uid != userId;
+        allow list: if false;
+        allow create: if request.auth.uid != userId &&
+          request.resource.userId in get(/databases/$(database)/documents/users/$(request.auth.uid)).cards;
+        allow update: if request.auth.uid != userId &&
+          request.resource.userId in get(/databases/$(database)/documents/users/$(request.auth.uid)).cards;
+        allow delete: if false;
+      }
     }
   }
 }

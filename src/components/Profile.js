@@ -1,4 +1,5 @@
 import React, { memo, useState, useEffect } from 'react';
+import Header from './Header';
 
 export default memo(({ userId, firestore }) => {
   const firebaseUpdate = changeValues(firestore, userId);
@@ -27,6 +28,7 @@ export default memo(({ userId, firestore }) => {
 
   return (
     <div>
+      <Header>Profile</Header>
       <span>
         <b>Name: </b>
         <input
